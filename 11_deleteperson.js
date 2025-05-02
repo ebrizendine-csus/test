@@ -65,5 +65,65 @@ describe('Edit Person Test', function () {
     const rows = await driver.findElements(By.xpath(`//table/tbody/tr/td[contains(text(), "${deletedPersonEmail}")]`));
     assert.strictEqual(rows.length, 0, `Expected "${deletedPersonEmail}" to be deleted, but it still appears in the table.`);
     console.log('Person was successfully deleted');
+
+    // Step 2: Navigate to People page
+    await driver.get('http://localhost:5072/People/People');
+    console.log('Navigated to People page');
+
+    // Step 3: Click on Add button to go to Create Person page
+    const addButton = await driver.findElement(By.css('a[href="/People/CreatePerson"]'));
+    await addButton.click();
+    console.log('Clicked on Add button to go to Create Person page');
+
+    await driver.get('http://localhost:5072/People/CreatePerson');
+    console.log('Navigated to Create Person page');
+
+    // Step 4: Fill out Create Person form
+    const personData = {
+      firstName: 'John',
+      middleName: 'Doe',
+      lastName: 'Smith',
+      displayName: 'John D. Smith',
+      headline: 'Real Estate Agent',
+      primaryEmail: testUser.email,
+      secondaryEmail: 'john.doe.secondary@example.com',
+      primaryEmailLabel: 'Work Email',
+      secondaryEmailLabel: 'Personal Email',
+      primaryPhone: '123-456-7890',
+      secondaryPhone: '098-765-4321',
+      primaryPhoneLabel: 'Work Phone',
+      secondaryPhoneLabel: 'Home Phone',
+      street: '123 Main St',
+      city: 'Sample City',
+      stateProvince: 'CA',
+      postal: '12345',
+      country: 'USA',
+      comments: 'This is a test user.',
+    };
+
+    await driver.findElement(By.id('Person_NameFirst')).sendKeys(personData.firstName);
+    await driver.findElement(By.id('Person_NameMiddle')).sendKeys(personData.middleName);
+    await driver.findElement(By.id('Person_NameLast')).sendKeys(personData.lastName);
+    await driver.findElement(By.id('Person_NameDisplay')).sendKeys(personData.displayName);
+    await driver.findElement(By.id('Person_Headline')).sendKeys(personData.headline);
+    await driver.findElement(By.id('Person_EmailPrimary')).sendKeys(personData.primaryEmail);
+    await driver.findElement(By.id('Person_EmailSecondary')).sendKeys(personData.secondaryEmail);
+    await driver.findElement(By.id('Person_EmailPrimaryLabel')).sendKeys(personData.primaryEmailLabel);
+    await driver.findElement(By.id('Person_EmailSecondaryLabel')).sendKeys(personData.secondaryEmailLabel);
+    await driver.findElement(By.id('Person_PhonePrimary')).sendKeys(personData.primaryPhone);
+    await driver.findElement(By.id('Person_PhoneSecondary')).sendKeys(personData.secondaryPhone);
+    await driver.findElement(By.id('Person_PhonePrimaryLabel')).sendKeys(personData.primaryPhoneLabel);
+    await driver.findElement(By.id('Person_PhoneSecondaryLabel')).sendKeys(personData.secondaryPhoneLabel);
+    await driver.findElement(By.id('Person_Street')).sendKeys(personData.street);
+    await driver.findElement(By.id('Person_City')).sendKeys(personData.city);
+    await driver.findElement(By.id('Person_StateProvince')).sendKeys(personData.stateProvince);
+    await driver.findElement(By.id('Person_Postal')).sendKeys(personData.postal);
+    await driver.findElement(By.id('Person_Country')).sendKeys(personData.country);
+    await driver.findElement(By.id('Person_Comments')).sendKeys(personData.comments);
+
+    // Step 5: Submit the form
+    const submitButton = await driver.findElement(By.css('button[type="submit"].btn.btn-primary.me-2'));
+    await submitButton.click();
+    console.log('Added person back');
   });
 });
