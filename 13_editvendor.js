@@ -40,36 +40,58 @@ describe('Edit Vendor Test', function () {
     console.log('Navigated to Vendors page');
 
     // Step 3: Click the first Edit button in the table
-    const firstEditButton = await driver.findElement(By.xpath('//table/tbody/tr[1]//button[contains(text(), "Edit")]'));
+    await driver.wait(until.elementLocated(By.xpath('//table/tbody/tr[1]')), 10000);
+    const firstEditButton = await driver.findElement(By.xpath('//table/tbody/tr[1]//button[contains(text(), "Edit") and @data-bs-target="#editEntityModal"]'));
     await driver.executeScript("arguments[0].scrollIntoView(true);", firstEditButton);
     await driver.sleep(500); // optional: wait for scroll to settle
     await firstEditButton.click();
     console.log('Clicked first Edit button in the table');
 
     // Step 4: Wait for modal to be visible
-    const modal = await driver.findElement(By.id('updateModal'));
+    const modal = await driver.findElement(By.id('editEntityModal')); // instead of 'updateModal'
     await driver.wait(until.elementIsVisible(modal), 10000);
     console.log('Edit Vendor modal is visible');
 
-    // Step 5: Edit first name
-    await driver.sleep(500); // allow transition
-    const firstNameInput = await driver.findElement(By.css('input[name="PersonRecord.NameFirst"]'));
-    await firstNameInput.clear();
-    await firstNameInput.sendKeys('UpdatedFirstName');
-    console.log('Edited first name');
-
-    // Step 6: Click "Next" twice to go to the last step
-    const nextButton = await driver.findElement(By.id('personNextBtn'));
-    await nextButton.click();
-    await driver.sleep(500); // allow transition
-    await nextButton.click();
+    // Step 5: Edit name
+    await driver.wait(until.elementLocated(By.id('updateName')), 10000);
+    const entityNameInput = await driver.findElement(By.id('updateName'));
+    await entityNameInput.clear();
     await driver.sleep(500);
-    console.log('Navigated to last modal step');
+    await entityNameInput.sendKeys('UpdatedBusinessName');
+    console.log('Edited business name');
 
     // Step 7: Click "Save & Exit"
-    const saveButton = await driver.findElement(By.id('personSubmitBtn'));
+    const saveButton = await driver.findElement(By.css('button[name="saveExit"]'));
     await driver.wait(until.elementIsVisible(saveButton), 5000);
     await saveButton.click();
     console.log('Clicked Save & Exit');
+
+    // Step 9: Wait for the modal to close (not visible)
+    await driver.wait(async () => {
+      const modalEl = await driver.findElement(By.id('editEntityModal'));
+      const isVisible = await modalEl.isDisplayed().catch(() => false);
+      return !isVisible;
+    }, 10000);    
+    console.log('Modal closed');
+
+
+    // Step 10: Wait for table to update and check for the new business name
+    await driver.sleep(1000); // wait a bit for table refresh if it's JS-driven
+    const rows = await driver.findElements(By.css('table tbody tr'));
+    let nameFound = false;
+
+    for (const row of rows) {
+        const cells = await row.findElements(By.css('td'));
+        if (cells.length > 1) {
+            const text = await cells[1].getText(); // Column 1 is Business Name
+            if (text.includes('UpdatedBusinessName')) {
+                nameFound = true;
+                break;
+            }
+        }
+    }
+
+    assert.strictEqual(nameFound, true, 'Updated business name not found in table');
+    console.log('Verified updated business name is in the table');
   });
 });

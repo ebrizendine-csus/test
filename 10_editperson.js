@@ -49,6 +49,7 @@ describe('Edit Person Test', function () {
     await driver.wait(until.elementIsVisible(modal), 10000);
     const firstNameInput = await driver.findElement(By.css('input[name="PersonRecord.NameFirst"]'));
     await firstNameInput.clear();
+    await driver.sleep(500);
     await firstNameInput.sendKeys(updatedFirstName);
     console.log('First name updated');
 
