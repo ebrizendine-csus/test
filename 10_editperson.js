@@ -1,6 +1,7 @@
 const { Builder, By, Key, until } = require('selenium-webdriver');
 const assert = require('assert');
 const fs = require('fs');
+const chrome = require('selenium-webdriver/chrome');
 
 describe('Edit Person Test', function () {
   this.timeout(30000);
@@ -11,7 +12,10 @@ describe('Edit Person Test', function () {
   before(async () => {
     testUser = JSON.parse(fs.readFileSync('./test/lastCreatedUser.json', 'utf8'));
 
-    driver = await new Builder().forBrowser('chrome').build();
+    const options = new chrome.Options();
+    options.addArguments('--force-device-scale-factor=0.1');  // 10% zoom
+
+    driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
     console.log('Browser launched');
   });
 

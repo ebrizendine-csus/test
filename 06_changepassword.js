@@ -1,6 +1,7 @@
 const { Builder, By, until } = require('selenium-webdriver');
 const assert = require('assert');
 const fs = require('fs');
+const chrome = require('selenium-webdriver/chrome');
 
 describe('Change Password Test', function () {
   this.timeout(20000);
@@ -12,10 +13,13 @@ describe('Change Password Test', function () {
   before(async () => {
     testUser = JSON.parse(fs.readFileSync('./test/lastCreatedUser.json', 'utf8'));
 
+    const options = new chrome.Options();
+    options.addArguments('--force-device-scale-factor=0.1');  // 10% zoom
+
     const randomSuffix = Math.floor(Math.random() * 1000000); // Random 6-digit number
     newPassword = `Password${randomSuffix}!`;
 
-    driver = await new Builder().forBrowser('chrome').build();
+    driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
     console.log('Browser launched');
   });
 

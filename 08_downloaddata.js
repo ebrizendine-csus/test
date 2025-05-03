@@ -25,6 +25,8 @@ describe('Download Personal Data Test', function () {
       'profile.default_content_settings.popups': 0,
     });
 
+    options.addArguments('--force-device-scale-factor=0.1');  // 10% zoom
+
     driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
   });
 
